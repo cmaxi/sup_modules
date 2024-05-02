@@ -1,21 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace modules\lists\controller;
+namespace modules\subjects\controller;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use sup\controller;
+use modules\subjects\controller\Controller;
 
 abstract class GeneratePDF extends Controller
 {
 
     protected $print = false;
-
-    function __construct(\Slim\Container $container) {
-        parent::__construct($container);
-        
-        $this->settings = $this->db->get("settings", "*");
-    }
 
     public function __invoke(Request $request, Response $response, $args)
     {
@@ -24,7 +18,10 @@ abstract class GeneratePDF extends Controller
         
         $listInfo = $this->db->get('main', ['user [Int]', 'version [Int]'], [
             'id' => $listID,
-            'version' => $this->settings['active_version'],
+            'version' => [
+                $this->settings['active_version_7'],
+                $this->settings['active_version_8']
+            ],
             'state[!]' => 0
         ]);
         
@@ -38,38 +35,41 @@ abstract class GeneratePDF extends Controller
             return $this->notFound($response);
         }
 
-        $lists = $this->db->select('lists', [
-            '[>]books' => ['book' => 'id']
+        $subjects = $this->db->select('lists', [
+            '[>]subjects' => ['subject' => 'id']
         ], [
-            'books.id [Index]',
-            'books.author [String]',
-            'books.name [String]'
+            'subjects.id',
+            'subjects.code',
+            'subjects.name',
+            'lists.level'
         ], [
-            'ORDER' => 'books.id',
-            'lists.list' => $listID
+            'ORDER' => 'subjects.id',
+            'lists.list' => $listID,
+            'subjects.state' => 0
         ]);
+        
+        
+        $qrURL = $listID . ':' . implode('-', array_column($subjects, 'id'));
 
-        $qrURL = (string) $request
-            ->getUri()
-            ->withPath($this->container->router->pathFor("lists-teacher-accept", ["id" => $listID]))
-            ->withQuery(http_build_query(['b' => base64_encode(implode('-', array_column($lists, 'id')))]))
-            ->withFragment("");
-
-        $lists = \array_map(function ($e) {
+        $subjects = \array_map(function ($e) {
             return [
-                $e['author'],
-                $e['name']
+                $e['code'],
+                $e['name'],
+                $this->container->lang->g('type-' . $e['level'], 'pdf')
             ];
-        }, $lists);
+        }, $subjects);
 
-        $versionName = $this->db->get('versions', 'name', ['id' => $listInfo['version']]);
+        //$versionName = $this->db->get('versions', 'name', ['id' => $listInfo['version']]);
+
+        $versionName = date("Y");
 
         $generator = new \SUP\PDF\Generate($this->container, $this->container->lang->g('title', 'pdf'), $versionName);
         $generator->setContent(substr_replace($listID, ' - ', 3, 0), $listID, $qrURL, $user);
         $generator->setData([
-            $this->container->lang->g('table-author', 'pdf'),
-            $this->container->lang->g('table-name', 'pdf'),
-        ], $lists, [30, 70]);
+            $this->container->lang->g('table-code', 'pdf'),
+            $this->container->lang->g('table-subject', 'pdf'),
+            $this->container->lang->g('table-type', 'pdf')
+        ], $subjects, [10, 50, 40]);
 
         if ($this->print) {
             $generator->print();

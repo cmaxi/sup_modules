@@ -1,35 +1,43 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace modules\lists\controller\admin;
+namespace modules\subjects\controller\admin;
 
-class settings extends \SUP\controller {
+use modules\subjects\controller\Controller;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
-    function __invoke($request, $response, $args) {
-
-        $data = $request->getParsedBody();
+class Settings extends Controller
+{
+    public function __invoke(Request $request, Response $response, $args)
+    {
         
         $edit = $this->sanitizePost($request, 'edit', FILTER_SANITIZE_STRING);
         $accept = $this->sanitizePost($request, 'accept', FILTER_SANITIZE_STRING);
-        $active = $this->sanitizePost($request, 'active', FILTER_SANITIZE_STRING);
+        $active7 = $this->sanitizePost($request, 'active7', FILTER_SANITIZE_STRING);
+        $active8 = $this->sanitizePost($request, 'active8', FILTER_SANITIZE_STRING);
 
-        if (!$this->container->db->has("versions", ["id" => $active]))
-            return $this->redirectWithMessage($response, 'lists', "error", [
-                $this->container->lang->g('settings-version-notfound', 'dash-admin')
+        if (!$this->container->db->has("versions", ["id" => $active7]) ||
+            !$this->container->db->has("versions", ["id" => $active8])
+        ) {
+            return $this->redirectWithMessage($response, 'subjects-admin', "error", [
+                $this->container->lang->g('settings-version-notfound', 'admin-dash')
             ]);
+        }
         
         $store = [
-            "active_version" => $active,
+            "active_version_7" => $active7,
+            "active_version_8" => $active8,
             "open_editing"   => $edit == "on",
             "open_accepting"  => $accept == "on"
         ];
-        if ($this->container->db->count("settings"))
+        if ($this->container->db->count("settings")) {
             $this->container->db->update("settings", $store);
-        else
+        } else {
             $this->container->db->insert("settings", $store);
+        }
 
-        return $this->redirectWithMessage($response, 'lists', "status", [
-            $this->container->lang->g('settings-saved', 'dash-admin')
+        return $this->redirectWithMessage($response, 'subjects-admin', "status", [
+            $this->container->lang->g('settings-saved', 'admin-dash')
         ]);
-
     }
 }

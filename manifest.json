@@ -1,57 +1,48 @@
 {
-    "name": "lists",
-    "description": "Allows creation, printing and managment of graduation kanons.",
-    "version": "0.1.6",
-    "min_base_version": "0.2.8",
+    "name": "subjects",
+    "description": "Allows registration and management of optional subjects.",
+    "version": "0.0.3",
+    "min_base_version": "0.2.9",
     "locale": {
         "name": {
-            "cs": "Maturitní kánon",
-            "en": "Graduation kanon"
+            "cs": "Volitelné předměty",
+            "en": "Optional subjects"
         }
     },
     "schema": {
         "settings": {
-            "active_version": "INTEGER NULL",
+            "active_version_7": "INTEGER NULL",
+            "active_version_8": "INTEGER NULL",
             "open_editing": "INTEGER",
             "open_accepting": "INTEGER"
         },
         "versions": {
             "id": "INTEGER PRIMARY KEY",
-            "name": "TEXT"
+            "limit": "INTEGER",
+            "limit_spare": "INTEGER",
+            "name": "TEXT",
+            "timer1": "TEXT",
+            "timer2": "TEXT"
         },
-        "books": {
+        "subjects": {
             "id": "INTEGER PRIMARY KEY",
+            "code": "TEXT",
             "name": "TEXT",
-            "author": "TEXT NULL",
-            "region": "INTEGER NULL",
-            "genere": "INTEGER NULL",
-            "version": "INTEGER"
-        },
-        "regions": {
-            "id": "INTEGER",
-            "name": "TEXT",
-            "min": "INTEGER",
-            "max": "INTEGER",
-            "version": "INTEGER"
-        },
-        "generes": {
-            "id": "INTEGER",
-            "name": "TEXT",
-            "min": "INTEGER",
-            "max": "INTEGER",
-            "version": "INTEGER"
+            "annotation": "TEXT NULL",
+            "version": "INTEGER",
+            "state": "INTEGER DEFAULT 0"
         },
         "main": {
             "id": "INTEGER PRIMARY KEY",
             "user": "INTEGER",
             "created": "INTEGER",
             "state": "INTEGER DEFAULT 0",
-            "version": "INTEGER",
-            "accepted_by": "INTEGER NULL"
+            "version": "INTEGER"
         },
         "lists": {
             "list": "INTEGER",
-            "book": "INTEGER"
+            "subject": "INTEGER",
+            "level": "INTEGER DEFAULT 0"
         }
     }
 }

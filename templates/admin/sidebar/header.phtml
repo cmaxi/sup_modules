@@ -1,0 +1,116 @@
+<style>
+
+
+
+.nav-separator {
+    margin: -10px -20px 0px -21px;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: thin solid rgb(210, 210, 210);
+    text-indent: 20px;
+    padding-bottom: 3px;
+}
+
+.panel-body {
+    position: relative;
+}
+
+.sidebar {
+  display: none;
+  top: 42px;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #fbfbfb;
+    border-right: 1px solid #eee;
+    border-top: 1px solid #eee;
+    height: 100%;
+    display: block!important;
+    height: auto!important;
+    padding-bottom: 0;
+    overflow: visible!important;
+  }
+}
+
+.nav-sidebar {
+  margin-right: -21px;
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+</style>
+
+<div class="container-fluid" style="min-height: 300px;">
+    <div class="row">
+    <div class="navbar-default navbar-header" style="background-color: transparent">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    </div>
+    <div class="col-sm-3 col-md-2 sidebar collapse" id="sidebar">
+        <div class="nav-separator">Hlavní</div>
+        <ul class="nav nav-sidebar">
+        <li <?=$sidebar_active == 'dash' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin')?>">Přehled <span class="sr-only">(current)</span></a></li>
+        <li <?=$sidebar_active == 'entries' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin-entries-dash')?>">Seznam zápisů</a></li>
+        <li <?=$sidebar_active == 'stats' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin-stats-dash')?>">Vyřazování seminářů</a></li>
+        <li <?=$sidebar_active == 'export' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin-export-dash')?>">Export</a></li>
+        </ul>
+        <div class="nav-separator">Nastavení</div>
+        <ul class="nav nav-sidebar">
+        <li <?=$sidebar_active == 'subjects' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin-subjects-dash')?>">Seznamy předmětů</a></li>
+        <li <?=$sidebar_active == 'timers' ? 'class="active"': ''?>><a href="<?=$router->pathFor('subjects-admin-timers-dash')?>">Časovače</a></li>
+        </ul>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+<!--div class="dropdown pull-right">
+    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Verze náhledu
+    <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+      <li class="dropdown-header">Aktuální verze</li>
+      <li><a href="#">2019</a></li>
+      <li class="divider"></li>
+      <li class="dropdown-header">Ostatní verze</li>
+      <li><a href="#">2018</a></li>
+      <li><a href="#">2020</a></li>
+    </ul>
+  </div-->

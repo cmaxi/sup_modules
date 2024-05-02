@@ -1,0 +1,56 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="col-sm-9">
+        <p><?=$lang->g('heading', 'student-preview')?></p>
+        </div>
+        <?php if ($state == 2):?>
+        <div class="col-sm-3">
+            <div class="pull-right btn-group">
+                <button class="btn btn-success disabled" data-toggle="tooltip" data-placement="top" title="<?=$lang->g('already-sent', 'student-preview')?>"><?=$lang->g('send', 'student-preview')?></button>
+                <a href="<?=$router->pathFor('subjects-student-generate', ['id' => $listID])?>" target="_blank" class="btn btn-primary"><?=$lang->g('print', 'student-preview')?></a>
+                <a class="btn btn-default" href="<?=$router->pathFor('subjects-student')?>"><?=$lang->g('back', 'student-preview')?></a>
+            </div>
+        </div>
+        <?php elseif ($state == 1):?>
+        <div class="col-sm-3">
+            <div class="pull-right btn-group">
+                <button class="btn btn-success disabled" data-toggle="tooltip" data-placement="top" title="<?=$lang->g('already-sent', 'student-preview')?>"><?=$lang->g('send', 'student-preview')?></button>
+                <button class="btn btn-primary disabled"><?=$lang->g('print', 'student-preview')?></button>
+                <a class="btn btn-default" href="<?=$router->pathFor('subjects-student')?>"><?=$lang->g('back', 'student-preview')?></a>
+            </div>
+        </div>
+        <?php elseif ($state == 0 || $state == 3):?>
+        <div class="col-sm-3">
+            <div class="btn-group pull-right">
+                <button class="btn btn-success" onclick="document.getElementById('send').submit()"><?=$lang->g('send', 'student-preview')?></button>
+                <button class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="<?=$lang->g('before-sent', 'student-preview')?>"><?=$lang->g('print', 'student-preview')?></button>
+                <a class="btn btn-default" href="<?=$router->pathFor('subjects-student-edit', ["id" => $listID])?>"><?=$lang->g('back', 'student-preview')?></a>
+            </div>
+        </div>
+        <?php endif?>
+    </div>
+</div>
+<h4><?=$lang->g('subjects', 'student-preview')?></h4>
+<table class="table table-hover table-condensed">
+    <thead>
+        <tr>
+            <th class="col-md-1"><?=$lang->g('table-code', 'student-preview')?></th>
+            <th class="col-md-6"><?=$lang->g('table-subject', 'student-preview')?></th>
+            <th class="col-md-5"><?=$lang->g('table-type', 'student-preview')?></th>
+        </tr>
+    </thead>
+    <?php foreach($subjects as $subject):?>
+    <tr>
+        <td><?=$subject['code']?></td>
+        <td><?=$subject['name']?></td>
+        <td><?=$lang->g('type-' . $subject['level'], 'student-preview')?></td>
+    </tr>
+    <?php endforeach;?>
+</table>
+</div>
+
+<form method="post" id="send" action="<?=$router->pathFor('subjects-student-preview', ["id" => $listID])?>">
+    <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
+    <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
+    <input type="hidden" name="_METHOD" value="PUT" />
+</form>

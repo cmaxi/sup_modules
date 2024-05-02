@@ -8,14 +8,14 @@
     <div class="panel-body">
     <p><?=$lang->g('new-format', 'admin-manage')?>
     <br />
-    <pre>[region id];[author];[name];[genere id]</pre>
+    <pre><?=$lang->g('csv-format', 'admin')?></pre>
     </p>
-    <form method="post" class="form-horizontal" enctype="multipart/form-data" action="<?=$router->pathFor('lists-admin-manage', ["id" => $version], ['mode' => 'upl'])?>">
+    <form method="post" class="form-horizontal" enctype="multipart/form-data" action="<?=$router->pathFor('subjects-admin-manage', ["id" => $version], ['mode' => 'upload'])?>">
         <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
         <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
         <input type="hidden" name="_METHOD" value="PUT" />
         <div class="col-md-12 form-group">
-        <input type="file" name="book" />
+        <input type="file" name="subjects" />
         </div>
         <div class="col-md-6 form-group">
             <input type="submit" class="btn btn-default form-control" value="<?=$lang->g('new-submit', 'admin-manage')?>" />
@@ -26,22 +26,26 @@
     
     <div class="panel panel-default">
     <div class="panel-heading">
-        <strong><?=$lang->g('books-title', 'admin-manage', ['count' => count($books)])?></strong>
+        <strong><?=$lang->g('subjects-title', 'admin-manage', ['count' => count($subjects)])?></strong>
         <div class="pull-right">
-            <a href="#" id="toggle-list" data-toggle="collapse" data-target="#collapse-list"><?=$lang->g('books-expand', 'admin-manage')?></a>
+            <a href="#" id="toggle-list" data-toggle="collapse" data-target="#collapse-list"><?=$lang->g('subjects-expand', 'admin-manage')?></a>
         </div>
     </div>
     <div class="panel-body collapse" id="collapse-list">
-    <?php if (is_array($books) && count($books)):?>
+    <?php if (is_array($subjects) && count($subjects)):?>
         <ul class='list-group'>
-        <?php foreach($books as $book):?>
+        <?php foreach($subjects as $subject):?>
         <li class='list-group-item'>
-            <span style="width: 75%;display: inline-block;"><?=$book['author'] == ""?"":$book['author'] . ": "?><b><?=$book['name']?></b></span>
+        <?php if($subject['state'] == 0):?>
+            <span style="width: 75%;display: inline-block;"><b><?=$subject['name']?></b><button onclick="sendClose(<?=$subject['id']?>)" class="pull-right btn btn-danger btn-xs"><?=$lang->g('subject-close', 'admin-manage')?></button></span>
+        <?php else:?>
+            <span style="width: 75%;display: inline-block;"><b><?=$subject['name']?></b><button onclick="sendOpen(<?=$subject['id']?>)" class="pull-right btn btn-success btn-xs"><?=$lang->g('subject-open', 'admin-manage')?></button></span>
+        <?php endif;?>
         </li>
         <?php endforeach;?>
         </ul>
     <?php else:?>
-        <span class='text-muted'><?=$lang->g('books-empty', 'admin-manage')?></span>
+        <span class='text-muted'><?=$lang->g('subjects-empty', 'admin-manage')?></span>
     <?php endif?>
     </div>
     </div>
@@ -49,73 +53,62 @@
 
 <div class="col-md-5 col-md-offset-2">
     <h3><?=$lang->g('settings-title', 'admin-manage')?>
-    <a href="<?=$router->pathFor('lists')?>" class="btn btn-default pull-right"><?=$lang->g('back', 'admin-manage')?></a>
+    <a href="<?=$router->pathFor('subjects')?>" class="btn btn-default pull-right"><?=$lang->g('back', 'admin-manage')?></a>
     </h3>
     <hr />
 
     <div class="panel panel-default">
-    <div class="panel-heading"><strong><?=$lang->g('settings-regions-title', 'admin-manage')?></strong></div>
+    <div class="panel-heading"><strong><?=$lang->g('settings-limit-title', 'admin-manage')?></strong></div>
     <div class="panel-body">
-    <p><?=$lang->g('settings-regions-expected', 'admin-manage')?></p>
-    <form method="post" class="form-horizontal" enctype="multipart/form-data" action="<?=$router->pathFor('lists-admin-manage', ["id" => $version], ['mode' => 'reg'])?>">
+    <form method="post" class="form-horizontal" enctype="multipart/form-data" action="<?=$router->pathFor('subjects-admin-manage', ["id" => $version], ['mode' => 'limit'])?>">
         <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
         <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
         <input type="hidden" name="_METHOD" value="PUT" />
-        <?php foreach ($regionsCount as $regID):?>
-            <div class="form-group">
-                <label class="col-md-2 control-label" for="<?=$regID?>"><?=$lang->g('settings-regions-num', 'admin-manage', ['num' => $regID])?></label>
-                <div class="col-md-5" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="reg[<?=$regID?>][name]" placeholder="<?=$lang->g('settings-regions-placeholder', 'admin-manage')?>"  value="<?=array_key_exists($regID, $regions)?$regions[$regID]['name']:''?>" required>
-                </div>
-                <div class="col-md-2" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="reg[<?=$regID?>][min]" placeholder="<?=$lang->g('settings-regions-min', 'admin-manage')?>" value="<?=array_key_exists($regID, $regions)?$regions[$regID]['min']:''?>">
-                </div>
-                <div class="col-md-2" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="reg[<?=$regID?>][max]" placeholder="<?=$lang->g('settings-regions-max', 'admin-manage')?>" value="<?=array_key_exists($regID, $regions)?$regions[$regID]['max']:''?>">
-                </div>
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="limit"><?=$lang->g('settings-limit', 'admin-manage')?></label>
+            <div class="col-md-5" style="padding: 0 5px">
+                <input class="form-control" type="text" name="limit" placeholder="<?=$lang->g('settings-limit-placeholder', 'admin-manage')?>" value="<?=$limit?>" required>
             </div>
-        <?php endforeach;?>
+        </div>
         <div class="col-md-4 form-group">
-            <input type="submit" class="btn btn-default form-control" value="<?=$lang->g('settings-regions-submit', 'admin-manage')?>" />
+            <input type="submit" class="btn btn-default form-control" value="<?=$lang->g('settings-limit-submit', 'admin-manage')?>" />
         </div>
     </form>
     </div>
     </div>
 
-    <div class="panel panel-default">
-    <div class="panel-heading"><strong><?=$lang->g('settings-generes-title', 'admin-manage')?></strong></div>
-    <div class="panel-body">
-    <p><?=$lang->g('settings-generes-expected', 'admin-manage')?></p>
-    <form method="post" class="form-horizontal" enctype="multipart/form-data" action="<?=$router->pathFor('lists-admin-manage', ["id" => $version], ['mode' => 'gen'])?>">
-        <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
-        <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
-        <input type="hidden" name="_METHOD" value="PUT" />
-        <?php foreach ($generesCount as $genID):?>
-            <div class="form-group">
-                <label class="col-md-2 control-label" for="<?=$genID?>"><?=$lang->g('settings-generes-num', 'admin-manage', ['num' => $genID])?></label>
-                <div class="col-md-5" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="gen[<?=$genID?>][name]" placeholder="<?=$lang->g('settings-generes-placeholder', 'admin-manage')?>"  value="<?=array_key_exists($genID, $generes)?$generes[$genID]['name']:''?>" required>
-                </div>
-                <div class="col-md-2" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="gen[<?=$genID?>][min]" placeholder="<?=$lang->g('settings-generes-min', 'admin-manage')?>" value="<?=array_key_exists($genID, $generes)?$generes[$genID]['min']:''?>">
-                </div>
-                <div class="col-md-2" style="padding: 0 5px">
-                    <input class="form-control" type="text" name="gen[<?=$genID?>][max]" placeholder="<?=$lang->g('settings-generes-max', 'admin-manage')?>" value="<?=array_key_exists($genID, $generes)?$generes[$genID]['max']:''?>">
-                </div>
-            </div>
-        <?php endforeach;?>
-        <div class="col-md-4 form-group">
-            <input type="submit" class="btn btn-default form-control" value="<?=$lang->g('settings-generes-submit', 'admin-manage')?>" />
-        </div>
-    </form>
-    </div>
-    </div>
 </div>
 
+<form method="post" action="<?=$router->pathFor('subjects-admin-manage', ["id" => $version], ['mode' => 'open'])?>">
+    <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
+    <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
+    <input type="hidden" name="_METHOD" value="PUT" />
+    <input type="hidden" name="subject" id="form-open">
+</form>
+
+<form method="post" action="<?=$router->pathFor('subjects-admin-manage', ["id" => $version], ['mode' => 'close'])?>">
+    <input type="hidden" name="<?= $csrf['nameKey'] ?>" value="<?= $csrf['name'] ?>">
+    <input type="hidden" name="<?= $csrf['valueKey'] ?>" value="<?= $csrf['value'] ?>">
+    <input type="hidden" name="_METHOD" value="PUT" />
+    <input type="hidden" name="subject" id="form-close">
+</form>
+
 <script>
+function sendOpen(id) {
+    var elm = document.getElementById('form-open')
+    elm.value = id
+    elm.parentNode.submit()
+}
+
+function sendClose(id) {
+    var elm = document.getElementById('form-close')
+    elm.value = id
+    elm.parentNode.submit()
+}
+
 $('#toggle-list').click(function(){
     $(this).text(function(i,old){
-        return old == "<?=$lang->g('books-expand', 'admin-manage')?>" ? "<?=$lang->g('books-collapse', 'admin-manage')?>" : "<?=$lang->g('books-expand', 'admin-manage')?>";
+        return old == "<?=$lang->g('list-expand', 'admin-manage')?>" ? "<?=$lang->g('list-collapse', 'admin-manage')?>" : "<?=$lang->g('list-expand', 'admin-manage')?>";
     });
 });
 </script>

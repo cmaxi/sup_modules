@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace modules\lists\controller\student;
+namespace modules\subjects\controller\student;
 
-use modules\lists\controller\GeneratePDF;
+use modules\subjects\controller\GeneratePDF;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -16,7 +16,7 @@ class Generate extends GeneratePDF
         if (!$this->db->has('main', [
             'id' => $listID,
             'version' => $this->settings['active_version'],
-            'state[!]' => 0,
+            'state' => 2,
             'user' => $this->container->auth->getUser()->getID()
         ])) {
             return $this->notFound($response);
@@ -29,8 +29,8 @@ class Generate extends GeneratePDF
     
     protected function notFound(&$response)
     {
-        return $this->redirectWithMessage($response, 'lists-student', "error", [
-            $this->container->lang->g('notfound', 'list-edit')
+        return $this->redirectWithMessage($response, 'subjects-student', "error", [
+            $this->container->lang->g('notfound', 'student-generate')
         ]);
     }
 }
