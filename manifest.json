@@ -1,0 +1,57 @@
+{
+    "name": "lists",
+    "description": "Allows creation, printing and managment of graduation kanons.",
+    "version": "0.1.6",
+    "min_base_version": "0.2.8",
+    "locale": {
+        "name": {
+            "cs": "Maturitní kánon",
+            "en": "Graduation kanon"
+        }
+    },
+    "schema": {
+        "settings": {
+            "active_version": "INTEGER NULL",
+            "open_editing": "INTEGER",
+            "open_accepting": "INTEGER"
+        },
+        "versions": {
+            "id": "INTEGER PRIMARY KEY",
+            "name": "TEXT"
+        },
+        "books": {
+            "id": "INTEGER PRIMARY KEY",
+            "name": "TEXT",
+            "author": "TEXT NULL",
+            "region": "INTEGER NULL",
+            "genere": "INTEGER NULL",
+            "version": "INTEGER"
+        },
+        "regions": {
+            "id": "INTEGER",
+            "name": "TEXT",
+            "min": "INTEGER",
+            "max": "INTEGER",
+            "version": "INTEGER"
+        },
+        "generes": {
+            "id": "INTEGER",
+            "name": "TEXT",
+            "min": "INTEGER",
+            "max": "INTEGER",
+            "version": "INTEGER"
+        },
+        "main": {
+            "id": "INTEGER PRIMARY KEY",
+            "user": "INTEGER",
+            "created": "INTEGER",
+            "state": "INTEGER DEFAULT 0",
+            "version": "INTEGER",
+            "accepted_by": "INTEGER NULL"
+        },
+        "lists": {
+            "list": "INTEGER",
+            "book": "INTEGER"
+        }
+    }
+}

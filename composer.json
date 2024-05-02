@@ -1,0 +1,7 @@
+{
+    "name": "sup-modules/lists",
+    "description": "Allows creation, printing and managment of graduation kanons.",
+    "type": "module",
+    "require": {
+    }
+}
